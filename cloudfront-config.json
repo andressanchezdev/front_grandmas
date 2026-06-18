@@ -1,0 +1,135 @@
+{
+  "version": "1.0",
+  "description": "CloudFront Distribution Configuration for Grandma's Liquors Frontend",
+  "deployment": {
+    "name": "Grandma's Liquors Frontend",
+    "origin": {
+      "s3Bucket": "grandmas-liquors-frontend",
+      "s3Region": "us-east-2",
+      "originAccessControl": {
+        "description": "OAC for S3 access",
+        "signingBehavior": "always",
+        "signingProtocol": "sigv4"
+      }
+    },
+    "behaviors": [
+      {
+        "pathPattern": "/api/*",
+        "origin": "elastic-beanstalk-api",
+        "allowedMethods": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+        "cachePolicy": "Managed-CachingDisabled",
+        "originRequestPolicy": "Managed-AllViewerExceptHostHeader",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "/uploads/*",
+        "origin": "elastic-beanstalk-api",
+        "allowedMethods": ["GET", "HEAD"],
+        "cachePolicy": "Managed-CachingOptimized",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "*.js",
+        "origin": "s3-frontend",
+        "cachePolicy": "Managed-CachingOptimized",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "*.css",
+        "origin": "s3-frontend",
+        "cachePolicy": "Managed-CachingOptimized",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "*.woff*",
+        "origin": "s3-frontend",
+        "cachePolicy": "Managed-CachingOptimized",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "*.png|*.jpg|*.jpeg|*.gif|*.svg",
+        "origin": "s3-frontend",
+        "cachePolicy": "Managed-CachingOptimized",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only"
+      },
+      {
+        "pathPattern": "*",
+        "origin": "s3-frontend",
+        "cachePolicy": "Managed-CachingDisabled",
+        "compress": true,
+        "viewerProtocolPolicy": "https-only",
+        "functionAssociations": [
+          {
+            "type": "viewer-request",
+            "functionName": "RewriteIndexHtml"
+          }
+        ]
+      }
+    ],
+    "origins": [
+      {
+        "id": "s3-frontend",
+        "domainName": "grandmas-liquors-frontend.s3.us-east-2.amazonaws.com",
+        "s3OriginConfig": {
+          "originAccessIdentity": "origin-access-control-oai-s3-frontend"
+        }
+      },
+      {
+        "id": "elastic-beanstalk-api",
+        "domainName": "grandmas-api.us-east-2.elasticbeanstalk.com",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "originProtocolPolicy": "https-only",
+        "originSslProtocols": ["TLSv1.2"]
+      }
+    ],
+    "cacheInvalidation": {
+      "paths": ["/*"],
+      "quantity": 1
+    }
+  },
+  "errorResponses": [
+    {
+      "errorCode": 403,
+      "responseCode": 200,
+      "responsePagePath": "/index.html",
+      "errorCachingMinTtl": 0
+    },
+    {
+      "errorCode": 404,
+      "responseCode": 200,
+      "responsePagePath": "/index.html",
+      "errorCachingMinTtl": 0
+    }
+  ],
+  "defaultRootObject": "index.html",
+  "compression": {
+    "enabled": true,
+    "includedProtocols": ["http", "https"],
+    "items": [
+      "text/html",
+      "text/css",
+      "text/plain",
+      "text/xml",
+      "text/javascript",
+      "application/javascript",
+      "application/json",
+      "application/xml",
+      "application/xml+rss",
+      "font/truetype",
+      "font/opentype",
+      "application/vnd.ms-fontobject",
+      "image/svg+xml"
+    ]
+  },
+  "httpVersion": "http2and3",
+  "enabled": true,
+  "isIpv6Enabled": true,
+  "priceClass": "PriceClass_100"
+}

@@ -1,0 +1,21 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://grandmas-api.us-east-2.elasticbeanstalk.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://grandmas-api.us-east-2.elasticbeanstalk.com/uploads/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "env": {
+    "VITE_API_PROXY_TARGET": "https://grandmas-api.us-east-2.elasticbeanstalk.com"
+  }
+}
